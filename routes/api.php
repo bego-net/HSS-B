@@ -57,6 +57,35 @@ Route::get('/debug/cloudinary', function () {
     }
 });
 
+// Debug: test email sending (remove after verifying)
+Route::get('/debug/mail', function () {
+    try {
+        \Illuminate\Support\Facades\Mail::raw(
+            'This is a test email from Hawi Backend on Render.',
+            function ($message) {
+                $message->to('begobegonet1@gmail.com')
+                        ->subject('Hawi Mail Test — ' . now()->toDateTimeString());
+            }
+        );
+
+        return response()->json([
+            'status'  => 'ok',
+            'message' => 'Test email sent successfully!',
+            'mailer'  => config('mail.default'),
+            'host'    => config('mail.mailers.smtp.host'),
+            'port'    => config('mail.mailers.smtp.port'),
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status'  => 'error',
+            'message' => $e->getMessage(),
+            'class'   => get_class($e),
+            'mailer'  => config('mail.default'),
+            'host'    => config('mail.mailers.smtp.host'),
+        ], 500);
+    }
+});
+
 // ──────────────────────────────────────────────
 // Admin auth
 // ──────────────────────────────────────────────
